@@ -1,0 +1,8 @@
+---
+name: test_voxpupuli_puppet_k8s
+# Add site to module path for profiles and roles.
+# From https://www.puppeteers.net/blog/serverless-puppet-with-control-repo-hiera-roles-and-profiles-and-puppet-bolt/
+modulepath:
+- site
+modules:
+- name: puppet/k8s
