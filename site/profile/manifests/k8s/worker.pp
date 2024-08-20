@@ -17,7 +17,7 @@ class profile::k8s::worker (
   Boolean $manage_firewall                   = true,         # k8s-class default: false
   Boolean $manage_kube_proxy                 = true,         # k8s-class default: true
   Boolean $puppetdb_discovery                = true,         # k8s-class default: false
-  K8s::Container_runtimes $container_manager = 'containerd', # k8s-class default: crio
+  K8s::Container_runtimes $container_manager = lookup(k8s::container_manager),
   Enum['node'] $role                         = 'node',       # k8s-class default: none
   Stdlib::HTTPUrl $control_plane_url         = $profile::k8s::controller::control_plane_url,
   String[1] $k8s_version                     = $profile::k8s::controller::k8s_version,

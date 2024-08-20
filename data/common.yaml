@@ -9,3 +9,6 @@ k8s::install::crictl::config:
 # set token in an upper level, so that it can be used by controller and worker
 # see also worker.yaml for usage
 k8s::server::resources::bootstrap::secret: '0123456789abcdef'
+
+# set container_manager in an upper level, so that it can be used by controller and worker
+k8s::container_manager: 'containerd' # k8s-class default: crio

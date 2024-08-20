@@ -26,7 +26,7 @@ class profile::k8s::controller (
   Enum['server'] $role                       = 'server',                  # k8s-class default: none
   K8s::CIDR $service_cidr                    = '10.20.0.0/20',            # k8s-class default: 10.1.0.0/24
   K8s::CIDR $pod_cidr                        = '10.20.16.0/20',           # k8s-class default: 10.0.0.0/16
-  K8s::Container_runtimes $container_manager = $profile::k8s::node::container_manager,
+  K8s::Container_runtimes $container_manager = lookup(k8s::container_manager),
 ) {
   class { 'k8s':
     container_manager    => $container_manager,
