@@ -16,11 +16,11 @@ class profile::k8s::worker (
   # lint:endignore
   Boolean $manage_firewall                   = true,         # k8s-class default: false
   Boolean $manage_kube_proxy                 = true,         # k8s-class default: true
-  Boolean $puppetdb_discovery                = true,         # k8s-class default: false
+  Boolean $puppetdb_discovery                = lookup(k8s::puppetdb_discovery),
   K8s::Container_runtimes $container_manager = lookup(k8s::container_manager),
   Enum['node'] $role                         = 'node',       # k8s-class default: none
-  Stdlib::HTTPUrl $control_plane_url         = $profile::k8s::controller::control_plane_url,
-  String[1] $k8s_version                     = $profile::k8s::controller::k8s_version,
+  Stdlib::HTTPUrl $control_plane_url         = lookup(k8s::control_plane_url),
+  String[1] $k8s_version                     = lookup(k8s::k8s_version),
 ) {
   class { 'k8s':
     container_manager  => $container_manager,

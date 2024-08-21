@@ -10,5 +10,13 @@ k8s::install::crictl::config:
 # see also worker.yaml for usage
 k8s::server::resources::bootstrap::secret: '0123456789abcdef'
 
-# set container_manager in an upper level, so that it can be used by controller and worker
-k8s::container_manager: 'containerd' # k8s-class default: crio
+# set data in an upper level, so that it can be used by controller and worker
+k8s::container_manager: containerd              # k8s-class default: crio
+k8s::puppetdb_discovery: false                  # k8s-class default: false
+k8s::k8s_version: 1.26.1                        # k8s-class default: 1.26.1
+# TODO: figure out how to get the fqdn in that url from a parameter to bolt plan run!!!!!
+k8s::control_plane_url: https://kubernetes:6443 # k8s-class default: https://kubernetes:6443
+
+# TODO: figure out how to get the fqdn in that url from a parameter to bolt plan run!!!!!
+k8s::server::etcd_servers:
+  - https://kubernetes:2379

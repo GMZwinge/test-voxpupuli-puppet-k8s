@@ -19,10 +19,10 @@ class profile::k8s::controller (
   # lint:endignore
   Boolean $manage_firewall                   = true,                      # k8s-class default: false
   Boolean $manage_kube_proxy                 = true,                      # k8s-class default: true
-  Boolean $puppetdb_discovery                = true,                      # k8s-class default: false
-  Stdlib::HTTPUrl $control_plane_url         = 'https://kubernetes:6443', # k8s-class default: https://kubernetes:6443
+  Boolean $puppetdb_discovery                = lookup(k8s::puppetdb_discovery),
+  Stdlib::HTTPUrl $control_plane_url         = lookup(k8s::control_plane_url),
   String[1] $etcd_version                    = '3.5.1',                   # k8s-class default: 3.5.1
-  String[1] $k8s_version                     = '1.26.1',                  # k8s-class default: 1.26.1
+  String[1] $k8s_version                     = lookup(k8s::k8s_version),
   Enum['server'] $role                       = 'server',                  # k8s-class default: none
   K8s::CIDR $service_cidr                    = '10.20.0.0/20',            # k8s-class default: 10.1.0.0/24
   K8s::CIDR $pod_cidr                        = '10.20.16.0/20',           # k8s-class default: 10.0.0.0/16
