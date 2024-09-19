@@ -6,3 +6,8 @@ modulepath:
 - site
 modules:
 - name: puppet/k8s
+# Log level in their own files. From https://www.puppet.com/docs/bolt/latest/logs.
+log:
+  bolt-plan-run-info.log:
+    append: false
+    level: info

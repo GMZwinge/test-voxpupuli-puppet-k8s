@@ -13,7 +13,13 @@ k8s::server::manage_kubeadm: true
 # Choose an interface which is for cluster communications.
 # The apiserver will expose a port on the controller
 # and all the workers need to be able to reach it.
-k8s::server::apiserver::advertise_address: "%{facts.networking.interfaces.enp0s8.ip}"
+#k8s::server::apiserver::advertise_address: "%{facts.networking.interfaces.enp0s8.ip}"
+# This is for my VMs:
+#k8s::server::apiserver::advertise_address: "%{facts.networking.interfaces.ens32.ip}"
+# Why use a hardware specifig facts when there is a non-hardware specific one?
+#k8s::server::apiserver::advertise_address: "%{facts.networking.ip}"
+# Why set something here when the default in .modules\k8s\manifests\server\apiserver.pp
+# is the same.
 
 ### K8S::Server::Resources
-k8s::server::resources::manage_flannel: false
+#k8s::server::resources::manage_flannel: false

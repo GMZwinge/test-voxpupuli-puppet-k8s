@@ -9,7 +9,7 @@
   The user to connect to the target.
 .PARAMETER Pass
   The password to connect to the target.
-.PARAMETER Type
+.PARAMETER NodeType
   Whether to provision the target as a Kubernetes control plane node (ctrl) or worker node.
 #>
 [CmdletBinding()]
@@ -18,7 +18,7 @@ Param(
   [string]$User = 'user',
   [string]$Pass = 'pass',
   [ValidateSet('controller', 'worker')]
-  [string]$Type = 'worker'
+  [string]$NodeType = 'worker'
 )
 $Script:ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -28,32 +28,23 @@ if (-not $MyInvocation.BoundParameters.ContainsKey('Verbose')) {
 }
 $ScriptRoot = $PSScriptRoot
 #
-Write-Verbose 'Installing modules...'
-# The Puppet Bolt image:
-$BoltDockerImage = 'puppet/puppet-bolt:3.27.4'
-# Project names can contain only lowercase letters, numbers, and underscores, and begin with a lowercase letter.
-$BoltProjectName = 'test_voxpupuli_puppet_k8s'
-$DockerMountDir = "/$BoltProjectName"
-# Mount source must be an absolute path.
-$DockerMountSource = $ScriptRoot
-$Command = "docker container run --mount 'type=bind,source=$DockerMountSource,destination=$DockerMountDir'" +
-  " --workdir '$DockerMountDir' --rm --env 'BOLT_PROJECT=$DockerMountDir' '$BoltDockerImage'" +
-  " module install --force"
-Write-Verbose $Command
-Invoke-Expression $Command
-if ($LASTEXITCODE -ne 0) {
-  throw "This command failed with exit code ${LASTEXITCODE}: $Command"
-}
+# Get shared variables.
+. "$PSScriptRoot\_Shared.ps1"
 #
 Write-Verbose 'Running plan...'
-$BaseCommand = "docker container run --mount 'type=bind,source=$PWD,destination=$DockerMountDir'" +
-  " --workdir '$DockerMountDir' --rm --env 'BOLT_PROJECT=$DockerMountDir' '$BoltDockerImage'" +
-  " --verbose plan run '${BoltProjectName}::myplan' --targets '$Target'" +
-  " --user '$User' --password '$Pass' --inventory 'inventory.yaml' 'type=$Type'"
-#$OutputFile = "$ScriptRoot\Build-plan-run-$Target-verbose-1.log"
+# TODO: could log the std out and err of the bolt command inside the container,
+# may need to override the entry point and run the whole bolt command itself,
+# possibly through a shell, then redirect ouputs using the parameters
+#   > bolt-plan-run-std.log 2>&1
+$BaseCommand = "docker container run --mount 'type=bind,source=$DockerMountSource,destination=$DockerMountDestination'" +
+  " --workdir '$DockerMountDestination' --rm --env 'BOLT_PROJECT=$DockerMountDestination' '$BoltDockerImage'" +
+  " plan run '${BoltProjectName}::myplan' --targets '$Target'" +
+  " --verbose" +
+  " --user '$User' --password '$Pass' --inventory 'inventory.yaml' 'node_type=$NodeType'"
+$OutputFile = "$ScriptRoot\Build-plan-run-$Target-verbose.log"
 # Send command to output file so that I can easily copy and paste to run it again.
-#$BaseCommand | Out-File $OutputFile -Encoding ascii
-#$Command = "$BaseCommand | Out-File '$OutputFile' -Encoding ascii -Append"
-$Command = $BaseCommand
+'',$BaseCommand,'' | Out-File $OutputFile -Encoding ascii -Append
+$Command = "$BaseCommand | Out-File '$OutputFile' -Encoding ascii -Append"
+#$Command = $BaseCommand
 Write-Verbose $Command
 Invoke-Expression $Command

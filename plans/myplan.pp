@@ -1,6 +1,6 @@
 plan test_voxpupuli_puppet_k8s::myplan (
   TargetSpec $targets,
-  Enum['controller', 'worker'] $type,
+  Enum['controller', 'worker'] $node_type,
 ) {
   out::message('Start test_voxpupuli_puppet_k8s::myplan.')
   #
@@ -13,7 +13,7 @@ plan test_voxpupuli_puppet_k8s::myplan (
   $apply_results = apply($targets) {
     notify { "Start apply(${trusted['hostname']}).": }
     class { 'test_voxpupuli_puppet_k8s::my_manifest':
-      type => $type,
+      node_type => $node_type,
     }
     notify { "End apply(${trusted['hostname']}).":}
   }
