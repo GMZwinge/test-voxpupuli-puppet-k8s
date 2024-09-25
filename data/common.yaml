@@ -15,18 +15,15 @@ lookup_options:
     convert_to: Sensitive
   k8s::node::node_token:
     convert_to: Sensitive
-k8s::secret: 0123456789abcdef
+k8s::secret: "%{facts.kubernetes.secret}"
 k8s::server::resources::bootstrap::secret: "%{lookup('k8s::secret')}"
 k8s::node::node_token: "puppet.%{lookup('k8s::secret')}"
 
 # set data in an upper level, so that it can be used by controller and worker
-#k8s::container_manager: containerd              # k8s-class default: crio
 k8s::container_manager: crio                    # k8s-class default: crio
 k8s::puppetdb_discovery: false                  # k8s-class default: false
 k8s::k8s_version: 1.26.1                        # k8s-class default: 1.26.1
-# TODO: figure out how to get the fqdn in that url from a parameter to bolt plan run command!!!!!
-k8s::control_plane_url: https://kubernetes:6443 # k8s-class default: https://kubernetes:6443
+k8s::control_plane_url: "%{facts.kubernetes.control_plane_url}"
 
-# TODO: figure out how to get the fqdn in that url from a parameter to bolt plan run command!!!!!
 k8s::server::etcd_servers:
-  - https://kubernetes:2379
+  - "%{facts.kubernetes.etcd_server}"

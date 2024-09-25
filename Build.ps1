@@ -11,6 +11,12 @@
   The password to connect to the target.
 .PARAMETER NodeType
   Whether to provision the target as a Kubernetes control plane node (ctrl) or worker node.
+.PARAMETER ControlPlaneUrl
+  The url to the control plane.
+.PARAMETER EtcdServerUrl
+  The url to the etcd server.
+.PARAMETER Secret16Char
+  The 16 characters secret.
 #>
 [CmdletBinding()]
 Param(
@@ -18,7 +24,10 @@ Param(
   [string]$User = 'user',
   [string]$Pass = 'pass',
   [ValidateSet('controller', 'worker')]
-  [string]$NodeType = 'worker'
+  [string]$NodeType = 'worker',
+  [string]$ControlPlaneUrl = 'https://kubernetes:6443',
+  [string]$EtcdServerUrl = 'https://kubernetes:2379',
+  [string]$Secret16Char = '0123456789abcdef'
 )
 $Script:ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -40,7 +49,8 @@ $BaseCommand = "docker container run --mount 'type=bind,source=$DockerMountSourc
   " --workdir '$DockerMountDestination' --rm --env 'BOLT_PROJECT=$DockerMountDestination' '$BoltDockerImage'" +
   " plan run '${BoltProjectName}::myplan' --targets '$Target'" +
   " --verbose" +
-  " --user '$User' --password '$Pass' --inventory 'inventory.yaml' 'node_type=$NodeType'"
+  " --user '$User' --password '$Pass' --inventory 'inventory.yaml' 'node_type=$NodeType'" +
+  " 'control_plane_url=$ControlPlaneUrl' 'etcd_server_url=$EtcdServerUrl' 'secret_16_char=$Secret16Char'"
 $OutputFile = "$ScriptRoot\Build-plan-run-$Target-verbose.log"
 # Send command to output file so that I can easily copy and paste to run it again.
 '',$BaseCommand,'' | Out-File $OutputFile -Encoding ascii -Append
